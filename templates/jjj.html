@@ -1,0 +1,1050 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | PawWoofBD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #A29BFE;
+            --secondary: #00B894;
+            --accent: #FD79A8;
+            --dark: #2D3436;
+            --light: #F5F6FA;
+            --gray: #DFE6E9;
+            --border-radius: 12px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F9FAFF;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .checkout-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        @media (min-width: 992px) {
+            .checkout-container {
+                grid-template-columns: 1fr 400px;
+            }
+        }
+
+        /* Header Section */
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            grid-column: 1 / -1;
+            position: relative;
+        }
+
+        .checkout-header img {
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        .checkout-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .checkout-header p {
+            color: var(--dark);
+            opacity: 0.7;
+            font-size: 1.1rem;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 2rem 0 3rem;
+            grid-column: 1 / -1;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gray);
+            transform: translateY(-50%);
+            z-index: 1;
+            border-radius: 2px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 4px;
+            background: var(--primary);
+            transform: translateY(-50%);
+            z-index: 2;
+            border-radius: 2px;
+            width: 50%;
+            transition: var(--transition);
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 3;
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .step.active .step-number {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .step.completed .step-number::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dark);
+            opacity: 0.7;
+        }
+
+        .step.active .step-label,
+        .step.completed .step-label {
+            opacity: 1;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Form Section */
+        .form-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2.5rem;
+            transition: var(--transition);
+        }
+
+        .form-container:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray);
+        }
+
+        .section-title i {
+            color: var(--primary-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-light);
+            font-size: 1.1rem;
+        }
+
+        .input-icon input {
+            padding-left: 3rem;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Summary Section */
+        .summary-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 2.5rem;
+            position: sticky;
+            top: 1rem;
+            height: fit-content;
+        }
+
+        .summary-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray);
+        }
+
+        .summary-title i {
+            color: var(--primary-light);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray);
+            font-size: 1rem;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-total {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            color: var(--dark);
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            margin-top: 2rem;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary-light);
+        }
+
+        .payment-option.active {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .payment-option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 1.2rem;
+            left: 1.2rem;
+            height: 20px;
+            width: 20px;
+            background-color: white;
+            border: 2px solid var(--gray);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .payment-option:hover .checkmark {
+            border-color: var(--primary-light);
+        }
+
+        .payment-option.active .checkmark {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .payment-option.active .checkmark:after {
+            content: "";
+            position: absolute;
+            display: block;
+            top: 4px;
+            left: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .payment-icon {
+            font-size: 1.8rem;
+            margin: 0 1.5rem 0 2.5rem;
+            color: var(--primary);
+        }
+
+        .payment-label {
+            font-weight: 500;
+            font-size: 1.05rem;
+        }
+
+        .payment-description {
+            font-size: 0.85rem;
+            color: var(--dark);
+            opacity: 0.7;
+            margin-top: 0.3rem;
+        }
+
+        /* Payment Details */
+        .payment-details {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .payment-details.active {
+            display: block;
+        }
+
+        .payment-details p {
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            color: var(--dark);
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .payment-info {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .payment-info strong {
+            color: var(--primary);
+        }
+
+        .payment-number {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--gray);
+        }
+
+        .payment-number-label {
+            font-weight: 500;
+        }
+
+        .payment-number-value {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .copy-btn {
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a4bd1;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-block {
+            display: flex;
+            width: 100%;
+        }
+
+        .btn-lg {
+            padding: 1.2rem 2rem;
+            font-size: 1.2rem;
+        }
+
+        /* Delivery Time Options */
+        .delivery-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .delivery-option {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .delivery-option:hover {
+            border-color: var(--primary-light);
+        }
+
+        .delivery-option.active {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .delivery-option input {
+            display: none;
+        }
+
+        .delivery-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .delivery-label {
+            font-weight: 500;
+        }
+
+        .delivery-time {
+            font-size: 0.85rem;
+            color: var(--dark);
+            opacity: 0.7;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .checkout-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .checkout-header p {
+                font-size: 1rem;
+            }
+
+            .form-container,
+            .summary-container {
+                padding: 1.8rem;
+            }
+
+            .step-label {
+                font-size: 0.8rem;
+            }
+
+            .delivery-options {
+                flex-direction: column;
+            }
+
+            .payment-icon {
+                margin: 0 1rem 0 2rem;
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .checkout-container {
+                padding: 0.5rem;
+            }
+
+            .form-container,
+            .summary-container {
+                padding: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .payment-number {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Utility Classes */
+        .text-primary {
+            color: var(--primary);
+        }
+
+        .text-success {
+            color: var(--secondary);
+        }
+
+        .mb-3 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 1.5rem;
+        }
+
+        .opacity-75 {
+            opacity: 0.75;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-sm {
+            font-size: 0.85rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="checkout-header animate-in">
+            <img src="{% static 'image/final logo.png' %}" alt="PawWoofBD Logo" class="logo">
+            <h1>Complete Your Order</h1>
+            <p>Almost there! Just a few more details to complete your purchase</p>
+        </div>
+
+        <div class="progress-steps animate-in" style="animation-delay: 0.1s;">
+            <div class="progress-bar"></div>
+            <div class="step completed">
+                <div class="step-number">1</div>
+                <div class="step-label">Cart</div>
+            </div>
+            <div class="step active">
+                <div class="step-number">2</div>
+                <div class="step-label">Details</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-label">Payment</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-label">Complete</div>
+            </div>
+        </div>
+
+        <div class="form-container animate-in" style="animation-delay: 0.2s;">
+            <form method="post" action="{% url 'process_order' %}">
+                {% csrf_token %}
+                
+                <h2 class="section-title">
+                    <i class="fas fa-user-circle"></i> Personal Information
+                </h2>
+                
+                <div class="form-group">
+                    <label for="name" class="form-label">Full Name</label>
+                    <div class="input-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="name" name="name" class="form-control" 
+                               placeholder="John Doe" required
+                               value="{% if request.user.is_authenticated %}{{ request.user.get_full_name }}{% endif %}">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <div class="input-icon">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="phone" name="phone" class="form-control" 
+                               placeholder="+8801XXXXXXXXX" required
+                               value="{% if request.user.is_authenticated and request.user.profile.phone %}{{ request.user.profile.phone }}{% endif %}">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address (Optional)</label>
+                    <div class="input-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" class="form-control" 
+                               placeholder="your@email.com"
+                               value="{% if request.user.is_authenticated %}{{ request.user.email }}{% endif %}">
+                    </div>
+                </div>
+                
+                <h2 class="section-title mt-3">
+                    <i class="fas fa-truck"></i> Delivery Information
+                </h2>
+                
+                <div class="form-group">
+                    <label for="address" class="form-label">Full Address</label>
+                    <textarea id="address" name="address" class="form-control" placeholder="House #123, Road #4, Block A, Mirpur-1, Dhaka" required>{% if request.user.is_authenticated and request.user.profile.address %}{{ request.user.profile.address }}{% endif %}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Delivery Time</label>
+                    <div class="delivery-options">
+                        <label class="delivery-option active" id="standard-delivery">
+                            <input type="radio" name="delivery_time" value="standard" checked>
+                            <div class="delivery-icon"><i class="fas fa-truck"></i></div>
+                            <div class="delivery-label">Standard</div>
+                            <div class="delivery-time">2-3 business days</div>
+                        </label>
+                        <label class="delivery-option" id="express-delivery">
+                            <input type="radio" name="delivery_time" value="express">
+                            <div class="delivery-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="delivery-label">Express</div>
+                            <div class="delivery-time">Next business day</div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes" class="form-label">Order Notes (Optional)</label>
+                    <textarea id="notes" name="notes" class="form-control" placeholder="Any special instructions for delivery..."></textarea>
+                </div>
+                
+                <!-- Payment Method Selection -->
+                <h2 class="section-title mt-3">
+                    <i class="fas fa-credit-card"></i> Payment Method
+                </h2>
+                
+                <div class="form-group">
+                    <label class="payment-option active" id="cod-option">
+                        <input type="radio" name="payment_method" value="cod" checked>
+                        <span class="checkmark"></span>
+                        <i class="fas fa-money-bill-wave payment-icon"></i>
+                        <div>
+                            <div class="payment-label">Cash on Delivery</div>
+                            <div class="payment-description">Pay when you receive your order</div>
+                        </div>
+                    </label>
+                    
+                    <label class="payment-option" id="bkash-option">
+                        <input type="radio" name="payment_method" value="bkash">
+                        <span class="checkmark"></span>
+                        <i class="fas fa-mobile-alt payment-icon"></i>
+                        <div>
+                            <div class="payment-label">bKash</div>
+                            <div class="payment-description">Instant payment via bKash</div>
+                        </div>
+                    </label>
+                    
+                    <label class="payment-option" id="nagad-option">
+                        <input type="radio" name="payment_method" value="nagad">
+                        <span class="checkmark"></span>
+                        <i class="fas fa-wallet payment-icon"></i>
+                        <div>
+                            <div class="payment-label">Nagad</div>
+                            <div class="payment-description">Instant payment via Nagad</div>
+                        </div>
+                    </label>
+                </div>
+                
+                <!-- bKash Payment Details -->
+                <div id="bkash-details" class="payment-details">
+                    <div class="payment-info">
+                        <p><strong>Payment Instructions:</strong></p>
+                        <ol style="padding-left: 1.2rem; margin-top: 0.5rem;">
+                            <li>Go to your bKash Mobile Menu</li>
+                            <li>Select "Send Money"</li>
+                            <li>Enter our Merchant bKash Number</li>
+                            <li>Enter the amount (৳<span id="bkash-amount">{{ total|floatformat:2 }}</span>)</li>
+                            <li>Enter reference "PWBD"</li>
+                            <li>Enter your bKash PIN</li>
+                            <li>Complete the transaction</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="payment-number">
+                        <div>
+                            <div class="payment-number-label">Merchant bKash Number:</div>
+                            <div class="payment-number-value">0123456789</div>
+                        </div>
+                        <button type="button" class="copy-btn" onclick="copyToClipboard('0123456789', 'bKash number')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bkash_number" class="form-label">Your bKash Number</label>
+                        <div class="input-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                            <input type="text" id="bkash_number" name="bkash_number" class="form-control" placeholder="01XXXXXXXXX">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="bkash_transaction" class="form-label">Transaction ID</label>
+                        <div class="input-icon">
+                            <i class="fas fa-receipt"></i>
+                            <input type="text" id="bkash_transaction" name="bkash_transaction" class="form-control" placeholder="Enter transaction ID">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Nagad Payment Details -->
+                <div id="nagad-details" class="payment-details">
+                    <div class="payment-info">
+                        <p><strong>Payment Instructions:</strong></p>
+                        <ol style="padding-left: 1.2rem; margin-top: 0.5rem;">
+                            <li>Go to your Nagad Mobile Menu</li>
+                            <li>Select "Send Money"</li>
+                            <li>Enter our Merchant Nagad Number</li>
+                            <li>Enter the amount (৳<span id="nagad-amount">0.00</span>)</li>
+                            <li>Enter reference "PWBD"</li>
+                            <li>Enter your Nagad PIN</li>
+                            <li>Complete the transaction</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="payment-number">
+                        <div>
+                            <div class="payment-number-label">Merchant Nagad Number:</div>
+                            <div class="payment-number-value">0123456789</div>
+                        </div>
+                        <button type="button" class="copy-btn" onclick="copyToClipboard('0123456789', 'Nagad number')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nagad_number" class="form-label">Your Nagad Number</label>
+                        <div class="input-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                            <input type="text" id="nagad_number" name="nagad_number" class="form-control" placeholder="01XXXXXXXXX">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nagad_transaction" class="form-label">Transaction ID</label>
+                        <div class="input-icon">
+                            <i class="fas fa-receipt"></i>
+                            <input type="text" id="nagad_transaction" name="nagad_transaction" class="form-control" placeholder="Enter transaction ID">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <div class="form-check">
+                        <input type="checkbox" id="terms" name="terms" class="form-check-input" required>
+                        <label for="terms" class="form-check-label text-sm">
+                            I agree to the <a href="#" class="text-primary">Terms & Conditions</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block btn-lg mt-3">
+                    <i class="fas fa-lock"></i> Complete Order
+                </button>
+            </form>
+        </div>
+
+        <div class="summary-container animate-in" style="animation-delay: 0.3s;">
+            <h2 class="summary-title">
+                <i class="fas fa-receipt"></i> Order Summary
+            </h2>
+            
+            <!-- Cart items will be dynamically inserted here -->
+            <div id="cart-items-container">
+                <!-- This will be populated by JavaScript -->
+            </div>
+            
+            <div class="summary-item">
+                <span>Subtotal:</span>
+                <span id="subtotal">৳0.00</span>
+            </div>
+            
+            <div class="summary-item">
+                <span>Delivery Fee:</span>
+                <span class="text-success" id="delivery-fee">FREE</span>
+            </div>
+            
+            <div class="summary-item">
+                <span>Tax:</span>
+                <span id="tax">৳0.00</span>
+            </div>
+            
+            <div class="summary-item summary-total">
+                <span>Total:</span>
+                <span class="text-primary" id="total">৳0.00</span>
+            </div>
+            
+            <div class="mt-3 text-center">
+                <p class="text-sm opacity-75">
+                    <i class="fas fa-shield-alt"></i> Secure SSL encrypted payment
+                </p>
+                <p class="text-sm opacity-75">
+                    <i class="fas fa-lock"></i> Your personal data is protected
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // This would normally come from your backend/cart system
+            // For demo purposes, we'll use sample data
+            const cartItems = [
+                { name: "Premium Dog Food", price: 1200, quantity: 1 },
+                { name: "Cat Litter Box", price: 650, quantity: 1 },
+                { name: "Pet Grooming Kit", price: 450, quantity: 1 }
+            ];
+
+            // Calculate totals
+            const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = Math.round(subtotal * 0.05); // 5% tax
+            const total = subtotal + tax;
+
+            // Update the summary section
+            document.getElementById('subtotal').textContent = `৳${subtotal.toLocaleString('en-US')}.00`;
+            document.getElementById('tax').textContent = `৳${tax.toLocaleString('en-US')}.00`;
+            document.getElementById('total').textContent = `৳${total.toLocaleString('en-US')}.00`;
+
+            // Update payment amounts
+            document.getElementById('bkash-amount').textContent = total.toLocaleString('en-US') + '.00';
+            document.getElementById('nagad-amount').textContent = total.toLocaleString('en-US') + '.00';
+
+            // Populate cart items
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            cartItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'summary-item';
+                itemElement.innerHTML = `
+                    <span>${item.name} (${item.quantity}x):</span>
+                    <span>৳${(item.price * item.quantity).toLocaleString('en-US')}.00</span>
+                `;
+                cartItemsContainer.appendChild(itemElement);
+            });
+
+            // Phone number formatting
+            const phoneInput = document.getElementById('phone');
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = '+880' + value.substring(Math.min(value.length, 3));
+                }
+                e.target.value = value;
+            });
+            
+            // Payment method selection
+            const paymentOptions = {
+                'cod-option': null,
+                'bkash-option': 'bkash-details',
+                'nagad-option': 'nagad-details'
+            };
+            
+            // Delivery option selection
+            const deliveryOptions = ['standard-delivery', 'express-delivery'];
+            
+            // Handle option selection (for both payment and delivery)
+            function handleOptionSelection(optionType, options, activeClass = 'active') {
+                options.forEach(optionId => {
+                    const optionElement = document.getElementById(optionId);
+                    const radioInput = optionElement.querySelector('input[type="radio"]');
+                    
+                    optionElement.addEventListener('click', function() {
+                        // Remove active class from all options
+                        options.forEach(id => {
+                            document.getElementById(id).classList.remove(activeClass);
+                        });
+                        
+                        // Add active class to selected option
+                        this.classList.add(activeClass);
+                        
+                        // Check the radio input
+                        radioInput.checked = true;
+                    });
+                });
+            }
+            
+            // Initialize payment method selection
+            handleOptionSelection('payment', Object.keys(paymentOptions));
+            
+            // Initialize delivery option selection
+            handleOptionSelection('delivery', deliveryOptions);
+            
+            // Show/hide payment details based on selection
+            function updatePaymentDetails() {
+                // Hide all payment details first
+                Object.values(paymentOptions).forEach(detailId => {
+                    if (detailId) {
+                        document.getElementById(detailId).classList.remove('active');
+                    }
+                });
+                
+                // Show the selected payment method's details
+                const selectedOption = document.querySelector('input[name="payment_method"]:checked').value;
+                
+                if (selectedOption === 'bkash') {
+                    document.getElementById('bkash-details').classList.add('active');
+                } else if (selectedOption === 'nagad') {
+                    document.getElementById('nagad-details').classList.add('active');
+                }
+            }
+            
+            // Add event listeners to all payment methods
+            Object.keys(paymentOptions).forEach(optionId => {
+                document.getElementById(optionId).addEventListener('click', updatePaymentDetails);
+            });
+            
+            // Initialize payment details on page load
+            updatePaymentDetails();
+            
+            // Form submission validation
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const selectedPayment = document.querySelector('input[name="payment_method"]:checked').value;
+                
+                if (selectedPayment === 'bkash') {
+                    const bkashNumber = document.getElementById('bkash_number').value;
+                    const bkashTransaction = document.getElementById('bkash_transaction').value;
+                    
+                    if (!bkashNumber || !bkashTransaction) {
+                        alert('Please provide your bKash number and transaction ID');
+                        e.preventDefault();
+                    }
+                } else if (selectedPayment === 'nagad') {
+                    const nagadNumber = document.getElementById('nagad_number').value;
+                    const nagadTransaction = document.getElementById('nagad_transaction').value;
+                    
+                    if (!nagadNumber || !nagadTransaction) {
+                        alert('Please provide your Nagad number and transaction ID');
+                        e.preventDefault();
+                    }
+                }
+                
+                if (!document.getElementById('terms').checked) {
+                    alert('Please agree to the Terms & Conditions');
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Copy to clipboard function
+        function copyToClipboard(text, type) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert(`${type} copied to clipboard: ${text}`);
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
